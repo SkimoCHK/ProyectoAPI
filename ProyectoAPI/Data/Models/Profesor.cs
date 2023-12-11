@@ -26,5 +26,7 @@ namespace ProyectoAPI.Data.Models
 
         public Carrera Carrera { get; set; }
 
+        public List<Reserva> Reservas { get; set; }
+
     }
 }

@@ -1,9 +1,8 @@
-﻿// InstalacionController.cs
-
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProyectoAPI.Data.Services;
 using ProyectoAPI.Data.ViewModels;
+using System;
 
 namespace ProyectoAPI.Controllers
 {
@@ -21,36 +20,77 @@ namespace ProyectoAPI.Controllers
         [HttpGet("get-all-instalaciones")]
         public IActionResult GetAllInstalaciones()
         {
-            var allInstalaciones = _instalacionService.GetAllInstalaciones();
-            return Ok(allInstalaciones);
+            try
+            {
+                var allInstalaciones = _instalacionService.GetAllInstalaciones();
+                return Ok(allInstalaciones);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al obtener todas las instalaciones: {ex.Message}");
+            }
         }
 
         [HttpGet("get-instalacion-by-id/{id}")]
         public IActionResult GetInstalacionById(int id)
         {
-            var instalacion = _instalacionService.GetInstalacionById(id);
-            return Ok(instalacion);
+            try
+            {
+                var instalacion = _instalacionService.GetInstalacionById(id);
+                if (instalacion == null)
+                    return NotFound($"No se encontró la instalación con ID {id}");
+
+                return Ok(instalacion);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al obtener la instalación con ID {id}: {ex.Message}");
+            }
         }
 
         [HttpPost("add-instalacion")]
         public IActionResult AddInstalacion([FromBody] InstalacionVM instalacion)
         {
-            _instalacionService.AddInstalacion(instalacion);
-            return Ok();
+            try
+            {
+                _instalacionService.AddInstalacion(instalacion);
+                return Ok("Instalación agregada con éxito");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al agregar la instalación: {ex.Message}");
+            }
         }
 
         [HttpPut("update-instalacion-by-id/{id}")]
         public IActionResult UpdateInstalacionById(int id, [FromBody] InstalacionVM instalacion)
         {
-            var updateInstalacion = _instalacionService.UpdateInstalacionById(id, instalacion);
-            return Ok(updateInstalacion);
+            try
+            {
+                var updateInstalacion = _instalacionService.UpdateInstalacionById(id, instalacion);
+                if (updateInstalacion == null)
+                    return NotFound($"No se encontró la instalación con ID {id}");
+
+                return Ok(updateInstalacion);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al actualizar la instalación con ID {id}: {ex.Message}");
+            }
         }
 
         [HttpDelete("delete-instalacion-by-id/{id}")]
         public IActionResult DeleteInstalacionById(int id)
         {
-            _instalacionService.DeleteInstalacionById(id);
-            return Ok();
+            try
+            {
+                _instalacionService.DeleteInstalacionById(id);
+                return Ok("Instalación eliminada con éxito");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al eliminar la instalación con ID {id}: {ex.Message}");
+            }
         }
     }
 }

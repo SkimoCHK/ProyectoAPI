@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProyectoAPI.Data.Services;
 using ProyectoAPI.Data.ViewModels;
+using System;
 
 namespace ProyectoAPI.Controllers
 {
@@ -19,35 +20,77 @@ namespace ProyectoAPI.Controllers
         [HttpGet("get-all-carreras")]
         public IActionResult GetAllCarreras()
         {
-            var allcarreras = _carreraService.GetAllCarreras();
-            return Ok(allcarreras);
+            try
+            {
+                var allCarreras = _carreraService.GetAllCarreras();
+                return Ok(allCarreras);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al obtener todas las carreras: {ex.Message}");
+            }
         }
 
         [HttpGet("get-carrera-by-id/{id}")]
         public IActionResult GetCarreraById(int id)
         {
-            var carrera = _carreraService.GetCarreraById(id);
-            return Ok(carrera);
+            try
+            {
+                var carrera = _carreraService.GetCarreraById(id);
+                if (carrera == null)
+                    return NotFound($"No se encontró la carrera con ID {id}");
+
+                return Ok(carrera);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al obtener la carrera con ID {id}: {ex.Message}");
+            }
         }
 
         [HttpPost("add-carrera")]
-        public IActionResult AddBook([FromBody] CarreraVM carrera)
+        public IActionResult AddCarrera([FromBody] CarreraVM carrera)
         {
-            _carreraService.AddCarrera(carrera);
-            return Ok();
+            try
+            {
+                _carreraService.AddCarrera(carrera);
+                return Ok("Carrera agregada con éxito");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al agregar la carrera: {ex.Message}");
+            }
         }
+
         [HttpPut("update-carrera-by-id/{id}")]
         public IActionResult UpdateCarreraById(int id, [FromBody] CarreraVM carrera)
         {
-            var updateCarrera = _carreraService.UpdateCarreraById(id, carrera);
-            return Ok(updateCarrera);
+            try
+            {
+                var updateCarrera = _carreraService.UpdateCarreraById(id, carrera);
+                if (updateCarrera == null)
+                    return NotFound($"No se encontró la carrera con ID {id}");
+
+                return Ok(updateCarrera);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al actualizar la carrera con ID {id}: {ex.Message}");
+            }
         }
+
         [HttpDelete("delete-carrera-by-id/{id}")]
         public IActionResult DeleteCarreraById(int id)
         {
-            _carreraService.DeleteCarreraById(id);
-            return Ok();
+            try
+            {
+                _carreraService.DeleteCarreraById(id);
+                return Ok("Carrera eliminada con éxito");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, $"Error al eliminar la carrera con ID {id}: {ex.Message}");
+            }
         }
-
     }
 }

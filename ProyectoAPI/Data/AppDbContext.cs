@@ -13,6 +13,8 @@ namespace ProyectoAPI.Data
         public DbSet<Carrera> Carrera { get; set; }
         public DbSet<Edificio> Edificio { get; set; }
         public DbSet<Instalacion> Instalacion { get; set; }
+        public DbSet<Reserva> Reserva { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,6 +33,22 @@ namespace ProyectoAPI.Data
                 .WithOne(i => i.edificio)
                 .HasForeignKey(i => i.EdificioID)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Reserva>()
+            .HasOne(r => r.instalacion)
+            .WithMany(i => i.Reservas)
+            .HasForeignKey(r => r.InstalacionID)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            
+            modelBuilder.Entity<Reserva>()
+                .HasOne(r => r.profesor)
+                .WithMany(p => p.Reservas)
+                .HasForeignKey(r => r.ProfesorID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+
         }
 
 

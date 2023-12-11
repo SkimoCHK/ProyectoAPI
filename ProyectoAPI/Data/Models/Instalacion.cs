@@ -1,4 +1,6 @@
-﻿namespace ProyectoAPI.Data.Models
+﻿using System.Collections.Generic;
+
+namespace ProyectoAPI.Data.Models
 {
     public class Instalacion
     {
@@ -12,5 +14,6 @@
         public int EdificioID { get; set; }
         public Edificio edificio { get; set; }
 
+        public List<Reserva> Reservas { get; set; }
     }
 }

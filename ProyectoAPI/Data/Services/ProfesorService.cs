@@ -1,5 +1,8 @@
-﻿using ProyectoAPI.Data.Models;
+﻿// ProfesorService.cs
+
+using ProyectoAPI.Data.Models;
 using ProyectoAPI.Data.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,9 +17,6 @@ namespace ProyectoAPI.Data.Services
             _context = context;
         }
 
-        //Antiguo metodo que obtiene los nombres de los profes pero sin el nombre de la carrera
-        //public List<Profesor> GetAllProfesores() => _context.Profesores.ToList();
-
         public string GetCarreraNombreById(int carreraId)
         {
             var carrera = _context.Carrera.FirstOrDefault(c => c.IDCarrera == carreraId);
@@ -25,10 +25,8 @@ namespace ProyectoAPI.Data.Services
 
         public List<ProfesorVM> GetAllProfesores()
         {
-            // Obtiene la lista de profesores desde la base de datos
             var profesores = _context.Profesores.ToList();
 
-            // Mapea la lista de Profesor a ProfesorVM
             var profesoresVM = profesores.Select(profe => new ProfesorVM
             {
                 Nombre = profe.Nombre,
@@ -43,15 +41,13 @@ namespace ProyectoAPI.Data.Services
             return profesoresVM;
         }
 
-        //Antiguo metodo que obtiene los nombres de los profes pero sin el nombre de la carrera
-        //public Profesor GetProfesorById(int profesorId) => _context.Profesores.FirstOrDefault(n => n.Id == profesorId);
         public ProfesorVM GetProfesorById(int profesorId)
         {
             var profesor = _context.Profesores.FirstOrDefault(n => n.Id == profesorId);
 
             if (profesor == null)
             {
-                return null; // O puedes manejar el caso en el que no se encuentra el profesor
+                throw new InvalidOperationException($"No se encontró el profesor con ID {profesorId}");
             }
 
             var profesorVM = new ProfesorVM
@@ -67,7 +63,6 @@ namespace ProyectoAPI.Data.Services
 
             return profesorVM;
         }
-
 
         public void AddProfesor(ProfesorVM profe)
         {
@@ -88,6 +83,7 @@ namespace ProyectoAPI.Data.Services
         public Profesor UpdateProfesorById(int profesorid, ProfesorVM profesor)
         {
             var _profesor = _context.Profesores.FirstOrDefault(n => n.Id == profesorid);
+
             if (_profesor != null)
             {
                 _profesor.Nombre = profesor.Nombre;
@@ -99,20 +95,27 @@ namespace ProyectoAPI.Data.Services
 
                 _context.SaveChanges();
             }
+            else
+            {
+                throw new InvalidOperationException($"No se encontró el profesor con ID {profesorid}");
+            }
+
             return _profesor;
         }
 
         public void DeleteProfesorById(int profesorid)
         {
             var _profesor = _context.Profesores.FirstOrDefault(n => n.Id == profesorid);
+
             if (_profesor != null)
             {
                 _context.Profesores.Remove(_profesor);
                 _context.SaveChanges();
             }
+            else
+            {
+                throw new InvalidOperationException($"No se encontró el profesor con ID {profesorid}");
+            }
         }
-
-
-
     }
 }
